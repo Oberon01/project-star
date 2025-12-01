@@ -23,8 +23,10 @@ export default function HomePage() {
     { label: "Astra control panel", href: "/astra" },
     { label: "Systems atlas", href: "/systems" },
     { label: "Oracle mirror", href: "/oracle" },
-    { label: "Lab", href: "/lab" },
     { label: "Field briefing", href: "/briefing" },
+    { label: "Memory keep", href: "/memory"},
+    { label: "Lab", href: "/lab" },
+    
   ];
 
   return (
