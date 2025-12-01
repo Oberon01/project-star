@@ -1,5 +1,6 @@
 // app/page.tsx
 import Link from "next/link";
+import OracleSystemsSynthesis from "./components/OracleSystemsSynthesis";
 
 function formatToday() {
   const now = new Date();
@@ -161,6 +162,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      <OracleSystemsSynthesis />
     </div>
   );
 }
