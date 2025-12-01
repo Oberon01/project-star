@@ -2,15 +2,19 @@
 
 import { useEffect, useState } from "react";
 
-const STORAGE_KEY = "solaces.oracle.v1";
-
 type OracleEntry = {
   signal: string;
   friction: string;
   alignment: string;
 };
 
-type OracleState = Record<string, OracleEntry>;
+const EMPTY_ENTRY: OracleEntry = {
+  signal: "",
+  friction: "",
+  alignment: "",
+};
+
+const STORAGE_PREFIX = "solaces.oracle.daily";
 
 function getTodayKey() {
   const d = new Date();
@@ -31,46 +35,42 @@ function formatDateLabel(key: string) {
   });
 }
 
-const emptyEntry: OracleEntry = {
-  signal: "",
-  friction: "",
-  alignment: "",
-};
+function storageKeyFor(dateKey: string) {
+  return `${STORAGE_PREFIX}:${dateKey}`;
+}
 
 export default function OraclePage() {
-  const [entries, setEntries] = useState<OracleState>({});
-  const [currentKey, setCurrentKey] = useState<string>(getTodayKey());
+  const [currentKey, setCurrentKey] = useState(getTodayKey);
+  const [entry, setEntry] = useState<OracleEntry>(EMPTY_ENTRY);
 
-  // Load from localStorage
+  // Load entry whenever the date changes (including first mount)
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    try {
-      const parsed = JSON.parse(raw) as OracleState;
-      setEntries(parsed);
-    } catch {
-      // ignore
+    const raw = window.localStorage.getItem(storageKeyFor(currentKey));
+    if (!raw) {
+      setEntry(EMPTY_ENTRY);
+      return;
     }
-  }, []);
+    try {
+      const parsed = JSON.parse(raw) as OracleEntry;
+      setEntry({
+        signal: parsed.signal ?? "",
+        friction: parsed.friction ?? "",
+        alignment: parsed.alignment ?? "",
+      });
+    } catch {
+      setEntry(EMPTY_ENTRY);
+    }
+  }, [currentKey]);
 
-  // Save to localStorage whenever entries change
+  // Save entry whenever it changes
   useEffect(() => {
     if (typeof window === "undefined") return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-  }, [entries]);
-
-  const entry = entries[currentKey] ?? emptyEntry;
-
-  const updateEntry = (patch: Partial<OracleEntry>) => {
-    setEntries((prev) => ({
-      ...prev,
-      [currentKey]: {
-        ...(prev[currentKey] ?? emptyEntry),
-        ...patch,
-      },
-    }));
-  };
+    window.localStorage.setItem(
+      storageKeyFor(currentKey),
+      JSON.stringify(entry)
+    );
+  }, [entry, currentKey]);
 
   const changeDay = (delta: number) => {
     const [y, m, d] = currentKey.split("-").map(Number);
@@ -109,9 +109,7 @@ export default function OraclePage() {
               {isToday && <span className="text-slate-500"> · Today</span>}
             </span>
             <button
-              onClick={() => {
-                setCurrentKey(getTodayKey());
-              }}
+              onClick={() => setCurrentKey(getTodayKey())}
               className="rounded-md border border-slate-700 px-2 py-1 hover:bg-slate-800"
             >
               Today
@@ -139,7 +137,7 @@ export default function OraclePage() {
           </p>
           <textarea
             value={entry.signal}
-            onChange={(e) => updateEntry({ signal: e.target.value })}
+            onChange={(e) => setEntry({ ...entry, signal: e.target.value })}
             rows={6}
             className="mt-auto w-full bg-slate-950/40 border border-slate-800 rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:border-slate-700"
             placeholder="- A conversation that lingered\n- A pattern you noticed\n- Something that felt like a quiet nudge"
@@ -157,7 +155,7 @@ export default function OraclePage() {
           </p>
           <textarea
             value={entry.friction}
-            onChange={(e) => updateEntry({ friction: e.target.value })}
+            onChange={(e) => setEntry({ ...entry, friction: e.target.value })}
             rows={6}
             className="mt-auto w-full bg-slate-950/40 border border-slate-800 rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:border-slate-700"
             placeholder="- Tasks that felt heavier than they should\n- Social friction\n- Any &quot;this doesn&apos;t feel right&quot; moments"
@@ -175,19 +173,13 @@ export default function OraclePage() {
           </p>
           <textarea
             value={entry.alignment}
-            onChange={(e) => updateEntry({ alignment: e.target.value })}
+            onChange={(e) => setEntry({ ...entry, alignment: e.target.value })}
             rows={6}
             className="mt-auto w-full bg-slate-950/40 border border-slate-800 rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:border-slate-700"
             placeholder="- Work that felt natural\n- Moments of stillness\n- Choices that felt clean and simple"
           />
         </div>
       </section>
-      <div className="pt-2 text-xs text-slate-500">
-        <span>Need a more tactical view? </span>
-        <a href="/briefing" className="text-sky-400 hover:text-sky-300">
-            Open today&apos;s field briefing
-        </a>
-       </div>
     </div>
   );
 }
