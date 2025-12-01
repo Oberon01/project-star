@@ -43,7 +43,7 @@ export default function OraclePage() {
   const [currentKey, setCurrentKey] = useState(getTodayKey);
   const [entry, setEntry] = useState<OracleEntry>(EMPTY_ENTRY);
 
-  // Load entry whenever the date changes (including first mount)
+  // Load entry when date changes
   useEffect(() => {
     if (typeof window === "undefined") return;
     const raw = window.localStorage.getItem(storageKeyFor(currentKey));
@@ -63,14 +63,21 @@ export default function OraclePage() {
     }
   }, [currentKey]);
 
-  // Save entry whenever it changes
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(
-      storageKeyFor(currentKey),
-      JSON.stringify(entry)
-    );
-  }, [entry, currentKey]);
+  const isToday = currentKey === getTodayKey();
+
+  // Update helpers: update state + immediately write to localStorage
+  const updateField = (field: keyof OracleEntry, value: string) => {
+    setEntry((prev) => {
+      const next = { ...prev, [field]: value };
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(
+          storageKeyFor(currentKey),
+          JSON.stringify(next)
+        );
+      }
+      return next;
+    });
+  };
 
   const changeDay = (delta: number) => {
     const [y, m, d] = currentKey.split("-").map(Number);
@@ -81,8 +88,6 @@ export default function OraclePage() {
     const dd = String(date.getDate()).padStart(2, "0");
     setCurrentKey(`${yyyy}-${mm}-${dd}`);
   };
-
-  const isToday = currentKey === getTodayKey();
 
   return (
     <div className="space-y-6">
@@ -137,7 +142,7 @@ export default function OraclePage() {
           </p>
           <textarea
             value={entry.signal}
-            onChange={(e) => setEntry({ ...entry, signal: e.target.value })}
+            onChange={(e) => updateField("signal", e.target.value)}
             rows={6}
             className="mt-auto w-full bg-slate-950/40 border border-slate-800 rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:border-slate-700"
             placeholder="- A conversation that lingered\n- A pattern you noticed\n- Something that felt like a quiet nudge"
@@ -155,7 +160,7 @@ export default function OraclePage() {
           </p>
           <textarea
             value={entry.friction}
-            onChange={(e) => setEntry({ ...entry, friction: e.target.value })}
+            onChange={(e) => updateField("friction", e.target.value)}
             rows={6}
             className="mt-auto w-full bg-slate-950/40 border border-slate-800 rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:border-slate-700"
             placeholder="- Tasks that felt heavier than they should\n- Social friction\n- Any &quot;this doesn&apos;t feel right&quot; moments"
@@ -173,7 +178,7 @@ export default function OraclePage() {
           </p>
           <textarea
             value={entry.alignment}
-            onChange={(e) => setEntry({ ...entry, alignment: e.target.value })}
+            onChange={(e) => updateField("alignment", e.target.value)}
             rows={6}
             className="mt-auto w-full bg-slate-950/40 border border-slate-800 rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:border-slate-700"
             placeholder="- Work that felt natural\n- Moments of stillness\n- Choices that felt clean and simple"
