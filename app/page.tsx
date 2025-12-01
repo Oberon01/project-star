@@ -24,6 +24,7 @@ export default function HomePage() {
     { label: "Systems atlas", href: "/systems" },
     { label: "Oracle mirror", href: "/oracle" },
     { label: "Lab", href: "/lab" },
+    { label: "Field briefing", href: "/briefing" },
   ];
 
   return (

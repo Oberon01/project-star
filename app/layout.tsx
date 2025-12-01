@@ -21,7 +21,9 @@ export default function RootLayout({
             <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between">
               <div className="flex items-baseline gap-2">
                 <span className="text-sm font-medium uppercase tracking-[0.2em] text-slate-500">
-                  solaces
+                  <a href="/">
+                    solaces
+                  </a>
                 </span>
                 <span className="text-xs text-slate-600">/ core</span>
               </div>
