@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type MemoryItem = {
   id: string;
@@ -47,6 +47,7 @@ export default function MemoryPage() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [tag, setTag] = useState("");
+  const [query, setQuery] = useState("");
 
   // Load initial data
   useEffect(() => {
@@ -58,9 +59,10 @@ export default function MemoryPage() {
     if (!title.trim() && !body.trim()) return;
 
     const newItem: MemoryItem = {
-      id: crypto.randomUUID
-        ? crypto.randomUUID()
-        : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      id:
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
       title: title.trim() || "(untitled)",
       body: body.trim(),
       tag: tag.trim(),
@@ -82,6 +84,19 @@ export default function MemoryPage() {
     saveMemories(next);
   };
 
+  // Filtered items by search query
+  const filteredItems = useMemo(() => {
+    if (!query.trim()) return items;
+    const q = query.toLowerCase();
+    return items.filter((item) => {
+      return (
+        item.title.toLowerCase().includes(q) ||
+        item.body.toLowerCase().includes(q) ||
+        item.tag.toLowerCase().includes(q)
+      );
+    });
+  }, [items, query]);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -95,8 +110,16 @@ export default function MemoryPage() {
               A small vault for fragments worth carrying forward.
             </p>
           </div>
-          <div className="text-xs text-slate-500">
-            <span>{items.length} stored</span>
+          <div className="text-xs text-slate-500 text-right space-y-1">
+            <div>{items.length} stored</div>
+            <div className="flex items-center gap-2">
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search title, text, or tag..."
+                className="w-44 bg-slate-950/40 border border-slate-800 rounded-lg px-2 py-1 text-[11px] text-slate-200 focus:outline-none focus:border-slate-700"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -144,8 +167,12 @@ export default function MemoryPage() {
             Nothing stored yet. Capture things you don&apos;t want to carry in
             working memory — so your head can stay clear.
           </div>
+        ) : filteredItems.length === 0 ? (
+          <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 text-sm text-slate-400">
+            No memories match that search.
+          </div>
         ) : (
-          items.map((item) => (
+          filteredItems.map((item) => (
             <article
               key={item.id}
               className="rounded-xl border border-slate-800 bg-slate-900/60 p-4"
