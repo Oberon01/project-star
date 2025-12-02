@@ -126,24 +126,36 @@ export default function AstraPage() {
     });
   };
 
-  // Placeholder for future backend integration
-  // Here is where you will later call your Cloudflare Worker / Tunnel-backed API.
-  async function sendDeviceCommand(
-    device: AstraDevice,
-    desiredState: boolean
+const API_BASE =
+  process.env.NEXT_PUBLIC_ASTRA_API_BASE || "http://localhost:8787";
+
+async function sendDeviceCommand(
+  device: AstraDevice,
+  desiredState: boolean
   ): Promise<"success" | "error"> {
-    // TODO (future):
-    // await fetch("https://astra.your-domain/api/device", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({
-    //     id: device.id,
-    //     target: desiredState ? "on" : "off",
-    //   }),
-    // });
-    // For now, we just simulate success.
-    return "success";
+    try {
+      const res = await fetch(`${API_BASE}/api/astra/device/command`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "x-astra-key": process.env.NEXT_PUBLIC_ASTRA_API_KEY ?? "",
+         },
+        body: JSON.stringify({
+          device_id: device.id,
+          action: desiredState ? "on" : "off",
+        }),
+      });
+
+      if (!res.ok) return "error";
+      const data = await res.json();
+      // Optionally you could use data.is_on to reconcile state
+      return "success";
+    } catch (err) {
+      console.error("Astra device command failed:", err);
+      return "error";
+    }
   }
+
 
   const handleToggleDevice = async (id: string) => {
     const device = devices.find((d) => d.id === id);
@@ -214,7 +226,20 @@ export default function AstraPage() {
       label = `Scene: ${sceneId}`;
     }
 
-    // TODO (future): call backend for scene control
+    // Call backend (non-blocking best-effort)
+    try {
+      await fetch(`${API_BASE}/api/astra/scene/activate`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "x-astra-key": process.env.NEXT_PUBLIC_ASTRA_API_KEY ?? "", 
+        },
+        body: JSON.stringify({ scene_id: sceneId }),
+      });
+    } catch (err) {
+      console.error("Astra scene call failed:", err);
+    }
+
     appendLog({
       id: `${timestamp}-scene-${sceneId}`,
       timestamp,
@@ -222,6 +247,7 @@ export default function AstraPage() {
       status: "success",
     });
   };
+
 
   const onCount = devices.filter((d) => d.isOn).length;
 
