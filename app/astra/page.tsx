@@ -135,7 +135,7 @@ async function sendDeviceCommand(
   desiredState: boolean
   ): Promise<"success" | "error"> {
     try {
-      const res = await fetch(`${API_BASE}/api/astra/device/command`, {
+      const res = await fetch(`${API_BASE}/device/command`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -229,7 +229,7 @@ async function sendDeviceCommand(
 
     // Call backend (non-blocking best-effort)
     try {
-      await fetch(`${API_BASE}/api/astra/scene/activate`, {
+      await fetch(`${API_BASE}/scene/activate`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
