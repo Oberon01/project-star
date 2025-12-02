@@ -1,5 +1,5 @@
-// app/api/astra/device/command/route.ts
-export const runtime = "edge"; // works well on Cloudflare
+export const dynamic = "force-dynamic";
+export const runtime = "edge";
 
 const GATEWAY_BASE =
   process.env.ASTRA_GATEWAY_BASE_URL || "https://astra-gw.solaces.me";
