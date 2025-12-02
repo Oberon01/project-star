@@ -3,6 +3,6 @@
   "compatibility_date": "2025-12-01",
   "vars": {
     "NEXT_PUBLIC_ASTRA_API_BASE": "https://astra-gw.solaces.me/api/astra",
-    "NEXT_PUBLIC_ASTRA_API_KEY": "cuDM8r2jX5lAAvBr8jr3",
+    "NEXT_PUBLIC_ASTRA_API_KEY": "cuDM8r2jX5lAAvBr8jr3"
   }
 }
