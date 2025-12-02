@@ -249,7 +249,6 @@ async function sendDeviceCommand(
     });
   };
 
-
   const onCount = devices.filter((d) => d.isOn).length;
 
   return (
