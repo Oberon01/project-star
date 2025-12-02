@@ -22,7 +22,7 @@ type CommandLogEntry = {
 
 const API_BASE = process.env.NEXT_PUBLIC_ASTRA_API_BASE || "http://localhost:8787";
 
-const ASTRA_KEY = process.env.NEXT_PUBLIC_ASTRA_API_KEY || "";
+const ASTRA_KEY = process.env.NEXT_PUBLIC_ASTRA_API_KEY || "cuDM8r2jX5lAAvBr8jr3";
 
 const DEVICES_STORAGE_KEY = "astra.devices.v1";
 const LOG_STORAGE_KEY = "astra.log.v1";
