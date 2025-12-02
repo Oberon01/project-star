@@ -18,7 +18,6 @@ export async function POST(req: Request) {
     }
   );
 
-  // Pass through status + body
   return new Response(backendResp.body, {
     status: backendResp.status,
     headers: {
