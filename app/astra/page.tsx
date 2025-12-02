@@ -139,7 +139,7 @@ async function sendDeviceCommand(
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "x-astra-key": ASTRA_KEY,
+          //"x-astra-key": ASTRA_KEY,
          },
         body: JSON.stringify({
           device_id: device.id,
@@ -233,7 +233,7 @@ async function sendDeviceCommand(
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "x-astra-key": ASTRA_KEY, 
+          //"x-astra-key": ASTRA_KEY, 
         },
         body: JSON.stringify({ scene_id: sceneId }),
       });
