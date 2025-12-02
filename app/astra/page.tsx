@@ -22,7 +22,7 @@ type CommandLogEntry = {
 
 const API_BASE = process.env.NEXT_PUBLIC_ASTRA_API_BASE || "http://localhost:8787";
 
-const API_KEY = process.env.NEXT_PUBLIC_ASTRA_API_KEY || "";
+const ASTRA_KEY = process.env.NEXT_PUBLIC_ASTRA_API_KEY || "";
 
 const DEVICES_STORAGE_KEY = "astra.devices.v1";
 const LOG_STORAGE_KEY = "astra.log.v1";
@@ -139,7 +139,7 @@ async function sendDeviceCommand(
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "x-astra-key": process.env.NEXT_PUBLIC_ASTRA_API_KEY ?? "",
+          "x-astra-key": ASTRA_KEY,
          },
         body: JSON.stringify({
           device_id: device.id,
@@ -233,7 +233,7 @@ async function sendDeviceCommand(
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "x-astra-key": process.env.NEXT_PUBLIC_ASTRA_API_KEY ?? "", 
+          "x-astra-key": ASTRA_KEY, 
         },
         body: JSON.stringify({ scene_id: sceneId }),
       });
