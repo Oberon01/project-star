@@ -20,6 +20,10 @@ type CommandLogEntry = {
   detail?: string;
 };
 
+const API_BASE = process.env.NEXT_PUBLIC_ASTRA_API_BASE || "http://localhost:8787";
+
+const API_KEY = process.env.NEXT_PUBLIC_ASTRA_API_KEY || "";
+
 const DEVICES_STORAGE_KEY = "astra.devices.v1";
 const LOG_STORAGE_KEY = "astra.log.v1";
 
@@ -125,9 +129,6 @@ export default function AstraPage() {
       return next;
     });
   };
-
-const API_BASE =
-  process.env.NEXT_PUBLIC_ASTRA_API_BASE || "http://localhost:8787";
 
 async function sendDeviceCommand(
   device: AstraDevice,
